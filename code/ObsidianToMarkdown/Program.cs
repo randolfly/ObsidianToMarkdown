@@ -6,6 +6,7 @@ using System.IO;
 using Serilog;
 using ObsidianToMarkdown.Shared;
 using ObsidianToMarkdown.Context;
+using System.Text.RegularExpressions;
 
 namespace ObsidianToMarkdown
 {
@@ -13,40 +14,25 @@ namespace ObsidianToMarkdown
     {
         static void Main(string[] args)
         {
-            ConfigLogger();
+            //ConfigLogger();
 
-            FileConfig fileConfig = FileHelper.ReadFileConfig();
-            Log.Information($"{fileConfig.VaultPath}, {fileConfig.DestinationPath}");
+            //FileConfig fileConfig = FileHelper.ReadFileConfig();
+            //Log.Information($"{fileConfig.VaultPath}, {fileConfig.DestinationPath}");
 
-            string testfile = File.ReadAllText("testfile.md");
-            string sha256Result = FileHelper.ComputeSha256Hash(testfile);
-            Log.Information(sha256Result);
+            //string testfile = File.ReadAllText("testfile.md");
+            //string sha256Result = FileHelper.ComputeSha256Hash(testfile);
+            //Log.Information(sha256Result);
 
-            Log.Information("开始测试数据库");
-            using (var db = new ObsidianFileInfoContext())
-            {
-                //Log.Information($"Database path: {db.DbPath}.");
-                //ObsidianFileInfo fileInfo = new ObsidianFileInfo()
-                //{
-                //    Path = "./",
-                //    Sha256 = sha256Result
-                //};
-                //db.ObsidianFiles.Add(fileInfo);
+            //Log.Information("开始测试数据库");
 
-                //db.SaveChanges();
-                //Log.Information("存储测试数据");
+            // 提取yaml信息
 
-                var query = from f in db.ObsidianFiles
-                            orderby f.Path
-                            select f;
-                foreach(var f in query)
-                {
-                    Log.Information(f.Sha256);
-                }
+            string text = File.ReadAllText("testfile.md");
+            string pattern = @"^---(.|\n)*---";
+            MatchCollection mc = Regex.Matches(text, pattern);
 
-                Log.Information("完成数据库输出");
-            }
-
+            string yml = mc[0].ToString().Replace("---", "");
+            
 
             Log.CloseAndFlush();
         }
@@ -63,8 +49,7 @@ namespace ObsidianToMarkdown
             Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.Console()
-            .WriteTo.File(ObsidianSystemInfo.LogPath,
-                rollOnFileSizeLimit: true)
+            .WriteTo.File(ObsidianSystemInfo.LogPath)
             .CreateLogger();
         }
     }

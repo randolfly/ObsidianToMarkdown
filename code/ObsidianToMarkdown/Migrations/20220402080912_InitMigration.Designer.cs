@@ -10,8 +10,8 @@ using ObsidianToMarkdown.Context;
 namespace ObsidianToMarkdown.Migrations
 {
     [DbContext(typeof(ObsidianFileInfoContext))]
-    [Migration("20220402065939_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220402080912_InitMigration")]
+    partial class InitMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
