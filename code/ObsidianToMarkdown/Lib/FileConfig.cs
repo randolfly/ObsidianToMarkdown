@@ -13,6 +13,10 @@ namespace ObsidianToMarkdown.Lib
         /// </summary>
         public string VaultPath { get; set; }
 
+        /// <summary>
+        /// 输出目标文件夹地址
+        /// </summary>
+        public string DestinationPath { get; set; }
         //Todo: 添加文件过滤选项
     }
 }
