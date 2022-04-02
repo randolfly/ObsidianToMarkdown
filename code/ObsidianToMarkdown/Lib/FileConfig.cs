@@ -8,7 +8,7 @@ namespace ObsidianToMarkdown.Lib
 {
     public class FileConfig
     {
-           /// <summary>
+        /// <summary>
         /// obsidian vault 文件夹路径
         /// </summary>
         public string VaultPath { get; set; }
