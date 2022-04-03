@@ -51,11 +51,11 @@ namespace ObsidianToMarkdown.Lib
             return yamlHead;
         }
 
-        public static string AppendYamlInfo()
-        {
-            return "";
-        }
-
+        /// <summary>
+        /// 解析文件tags
+        /// </summary>
+        /// <param name="filePath">文件绝对路径</param>
+        /// <returns></returns>
         public static List<String> ParseTags(string filePath)
         {
             string fileText = GetFileContent(filePath);
@@ -78,6 +78,41 @@ namespace ObsidianToMarkdown.Lib
             //}
 
             return tagsList;
+        }
+
+        /// <summary>
+        /// 添加文件头部Hexo需要的Yaml信息
+        /// </summary>
+        public static void AppendHexoYamlInfo()
+        {
+
+        }
+        /// <summary>
+        /// 替换文件中ad-xx为hexo格式
+        /// </summary>
+        /// <param name="fileText">替换文本</param>
+        public static void ReplaceAdToHexo(string fileText)
+        {
+            string pattern = @"(?<head>```ad-\w+)\s(?<title>title[:|：]\s\w+)*(?<content>[\s\S]*?)(?<tail>```)";
+            var matches = Regex.Matches(fileText, pattern, RegexOptions.IgnoreCase);
+            foreach (Match match in matches)
+                Console.WriteLine("Head: {0}, Title: {1}", match.Groups["head"].Value,
+                    match.Groups["title"].Value);
+            MatchEvaluator evaluator = new MatchEvaluator(RebuildWord);
+            string newFileText = Regex.Replace(fileText, pattern, evaluator);
+            File.WriteAllText("replaceFile.md", newFileText);
+
+            static string RebuildWord(Match match)
+            {
+                string head = match.Groups["head"].Value;
+                string content = match.Groups["content"].Value;
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("{% note info %}\n");
+                stringBuilder.Append(content);
+                stringBuilder.Append("{% endnote %}\n");
+                return stringBuilder.ToString();
+            }
+
         }
 
     }

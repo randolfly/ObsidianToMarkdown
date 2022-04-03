@@ -25,32 +25,27 @@ namespace ObsidianToMarkdown
 
             //Log.Information("开始测试数据库");
 
-            // 提取yaml信息
-            //string text = File.ReadAllText("testfile.md");
-            //string pattern = @"(?<head>```ad-\w+)\s(?<title>title[:|：]\s\w+)*(?<content>[\s\S]*?)(?<tail>```)";
-            //var matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
+            // 提取ad-xx信息
+            string text = File.ReadAllText("testfile.md");
+            FileTransfer.ReplaceAdToHexo(text);
 
-            //foreach (Match match in matches)
-            //    Console.WriteLine("Head: {0}, Title: {1}", match.Groups["head"].Value,
-            //        match.Groups["title"].Value);
+            //Log.Information("测试Parse Tags");
 
-            Log.Information("测试Parse Tags");
+            //string fp = Path.GetFullPath("testfile.md");
+            //string vp = @"E:\Code\C#\Randolf.Blog\code\ObsidianToMarkdown";
+            //var yamlHead = FileTransfer.GetFileYamlHead(fp, vp);
 
-            string fp = Path.GetFullPath("testfile.md");
-            string vp = @"E:\Code\C#\Randolf.Blog\code\ObsidianToMarkdown";
-            var yamlHead = FileTransfer.GetFileYamlHead(fp, vp);
-
-            //File.WriteAllText("regexFile.md", yml);
-            Log.Information(yamlHead.DateTime.ToString());
-            Log.Information(yamlHead.Title);
-            foreach(var kv in yamlHead.Tags)
-            {
-                Log.Information($"tags:\t{kv}",kv);
-            }
-            foreach (var kv in yamlHead.Categories)
-            {
-                Log.Information($"categories:\t{kv}", kv);
-            }
+            ////File.WriteAllText("regexFile.md", yml);
+            //Log.Information(yamlHead.DateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            //Log.Information(yamlHead.Title);
+            //foreach(var kv in yamlHead.Tags)
+            //{
+            //    Log.Information($"tags:\t{kv}",kv);
+            //}
+            //foreach (var kv in yamlHead.Categories)
+            //{
+            //    Log.Information($"categories:\t{kv}", kv);
+            //}
 
             Log.CloseAndFlush();
         }
