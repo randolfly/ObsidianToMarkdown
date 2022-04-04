@@ -9,6 +9,7 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using ObsidianToMarkdown.Shared;
 using Serilog;
+using ObsidianToMarkdown.Context;
 
 namespace ObsidianToMarkdown.Lib
 {

@@ -1,4 +1,5 @@
 ﻿using ObsidianToMarkdown.Context;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +21,14 @@ namespace ObsidianToMarkdown.Lib
                 var dbFileInfos = ObsidianDb.ObsidianFiles
                     .Where(f => f.Path == fileInfo.Path);
                 if (dbFileInfos.Count() == 0)
+                {
                     ObsidianDb.Add(fileInfo);
-                ObsidianDb.SaveChanges();
+                    ObsidianDb.SaveChanges();
+                }
+                else
+                {
+                    Log.Debug($"{fileInfo.Path} 不存在!");
+                }
             }
         }
         /// <summary>
@@ -34,19 +41,24 @@ namespace ObsidianToMarkdown.Lib
             {
                 var dbFileInfos = ObsidianDb.ObsidianFiles
                     .Where(f => f.Path == filePath);
-                if(dbFileInfos.Count() != 0)
+                if (dbFileInfos.Count() != 0)
                 {
                     var dbFileInfo = dbFileInfos.First();
                     ObsidianDb.Remove(dbFileInfo);
+                    ObsidianDb.SaveChanges();
                 }
-                ObsidianDb.SaveChanges();
+                else
+                {
+                    Log.Debug($"{filePath} 不存在!");
+                }
             }
         }
         /// <summary>
         /// 修改文件信息
         /// </summary>
         /// <param name="fileInfo">文件信息</param>
-        public static void UpdateFile(ObsidianFileInfo fileInfo)
+        /// <returns>返回是否需要更新File=>更新: 1;\n不更新: 0;\n不存在该文件: -1</returns>
+        public static int UpdateFile(ObsidianFileInfo fileInfo)
         {
             using (var ObsidianDb = new ObsidianFileInfoContext())
             {
@@ -55,9 +67,25 @@ namespace ObsidianToMarkdown.Lib
                 if (dbFileInfos.Count() != 0)
                 {
                     var dbFileInfo = dbFileInfos.First();
-                    dbFileInfo.Sha256 = fileInfo.Sha256;
+                    if(fileInfo.Sha256 == dbFileInfo.Sha256)
+                    {
+                        ObsidianDb.SaveChanges();
+                        return 0;
+                    }
+                    else
+                    {
+                        dbFileInfo.Sha256 = fileInfo.Sha256;
+                        ObsidianDb.SaveChanges();
+                        return 1;
+                    }
                 }
-                ObsidianDb.SaveChanges();
+                else
+                {
+                    ObsidianDb.Add(fileInfo);
+                    ObsidianDb.SaveChanges();
+                    Log.Debug($"{fileInfo.Path} 不存在! 添加了这个文件");
+                    return -1;
+                }
             }
         }
     }

@@ -16,5 +16,9 @@ namespace ObsidianToMarkdown.Shared
         /// Config文件地址
         /// </summary>
         public static string ConfigPath = "config.yml";
+        /// <summary>
+        /// 存储数据的数据库
+        /// </summary>
+        public static string DbPath = "obsidianDb.db";
     }
 }

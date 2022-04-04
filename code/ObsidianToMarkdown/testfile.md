@@ -1,6 +1,16 @@
 # Chap3 线性映射
+![[attachments/Pasted image 20220309145224.png]]
 
-> - tags: #线性代数应该这样学 #linearAlgebra
+[[Chap3 线性映射]]
+
+- [[Chap5 本征值和本征向量#不变子空间]]
+- as
+
+> [[@liShenQiDeJuZhen22020]]
+> [[./Chap5 本征值和本征向量#不变子空间]]
+> [[../../Chap5 本征值和本征向量#不变子空间]]
+
+> - tags: #线性代数应该这样学 #linearAlgebra #asas-as
 
 前面的线性空间构成了分析的基础，是一个静止的空间。现在来到真正运动的领域——线性映射。Welcome to the true world!
 

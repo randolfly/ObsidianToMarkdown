@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ObsidianToMarkdown.Lib
+namespace ObsidianToMarkdown.Context
 {
     public class FileConfig
     {

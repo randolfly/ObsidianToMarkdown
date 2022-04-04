@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using ObsidianToMarkdown.Shared;
 
 namespace ObsidianToMarkdown.Context
 {
@@ -12,9 +13,7 @@ namespace ObsidianToMarkdown.Context
 
         public ObsidianFileInfoContext()
         {
-            var folder = Environment.SpecialFolder.LocalApplicationData;
-            var path = Environment.GetFolderPath(folder);
-            DbPath = System.IO.Path.Join(path, "obsidianToMarkdown.db");
+            DbPath = ObsidianSystemInfo.DbPath;
         }
         // The following configures EF to create a Sqlite database file in the
         // special "local" folder for your platform.

@@ -19,33 +19,63 @@ namespace ObsidianToMarkdown
             FileConfig fileConfig = FileHelper.ReadFileConfig();
             Log.Information($"{fileConfig.VaultPath}, {fileConfig.DestinationPath}");
 
-            //string testfile = File.ReadAllText("testfile.md");
-            //string sha256Result = FileHelper.ComputeSha256Hash(testfile);
-            //Log.Information(sha256Result);
+            DirectoryInfo vaultPath = Directory.CreateDirectory(fileConfig.VaultPath);
+            DirectoryInfo targetPath = Directory.CreateDirectory(fileConfig.DestinationPath);
 
-            //Log.Information("开始测试数据库");
-
-            // 提取ad-xx信息
-            string text = File.ReadAllText("testfile.md");
-            FileTransfer.ReplaceAdToHexo(text);
-
-            //Log.Information("测试Parse Tags");
-
-            //string fp = Path.GetFullPath("testfile.md");
-            //string vp = @"E:\Code\C#\Randolf.Blog\code\ObsidianToMarkdown";
-            //var yamlHead = FileTransfer.GetFileYamlHead(fp, vp);
-
-            ////File.WriteAllText("regexFile.md", yml);
-            //Log.Information(yamlHead.DateTime.ToString("yyyy-MM-dd HH:mm:ss"));
-            //Log.Information(yamlHead.Title);
-            //foreach(var kv in yamlHead.Tags)
-            //{
-            //    Log.Information($"tags:\t{kv}",kv);
-            //}
-            //foreach (var kv in yamlHead.Categories)
-            //{
-            //    Log.Information($"categories:\t{kv}", kv);
-            //}
+            List<DirectoryInfo>? vaultDictories = vaultPath.GetDirectories("*.*", System.IO.SearchOption.AllDirectories).ToList();
+            vaultDictories.Add(vaultPath);
+            // create dir
+            foreach (DirectoryInfo vaultDictoriesDir in vaultDictories)
+            {
+                string dirRelativePath = Path.GetRelativePath(vaultPath.FullName, vaultDictoriesDir.FullName);
+                string targetDirPath = Path.Combine(targetPath.FullName, dirRelativePath);
+                Directory.CreateDirectory(targetDirPath);
+                // 复制对应文件夹下所有文件
+                foreach (var fileInfo in vaultDictoriesDir.GetFiles("*.*"))
+                {
+                    string targetFilePath = "";
+                    if (fileInfo.Name.StartsWith("@"))
+                    {
+                        targetFilePath = Path.Combine(targetDirPath, "literature-" + fileInfo.Name.Replace("@", ""));
+                    }
+                    else
+                    {
+                        targetFilePath = Path.Combine(targetDirPath, fileInfo.Name);
+                    }
+                    // 检查文件信息
+                    if (fileInfo.Extension == ".md")
+                    {
+                        string fileText = File.ReadAllText(fileInfo.FullName);
+                        string sha256Result = FileHelper.ComputeSha256Hash(fileText);
+                        string fileRelativePath = Path.Combine(dirRelativePath, fileInfo.Name);
+                        ObsidianFileInfo obsidianFileInfo = new ObsidianFileInfo { Path = fileRelativePath, Sha256 = sha256Result };
+                        int isUpdate = DbHelper.UpdateFile(obsidianFileInfo);
+                        switch (isUpdate)
+                        {
+                            case -1 or 1:
+                                // 不存在/修改文件，转换过去
+                                if (File.Exists(targetFilePath))
+                                    File.Delete(targetFilePath);
+                                string newText = fileText.ReplaceAdToHexo()
+                                    .ReplaceWikiLink()
+                                    .AppendHexoYamlInfo(Path.GetFullPath(fileInfo.FullName), fileConfig.VaultPath);
+                                File.WriteAllText(targetFilePath, newText);
+                                break;
+                            case 0:
+                                Log.Information($"file: {targetFilePath} already exists, innored");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        if (!File.Exists(targetFilePath))
+                        {
+                            File.Copy(fileInfo.FullName, targetFilePath);
+                        }
+                        Log.Information($"copy file: {fileInfo.FullName} to {targetFilePath}");
+                    }
+                }
+            }
 
             Log.CloseAndFlush();
         }

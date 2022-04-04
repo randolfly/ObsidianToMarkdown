@@ -27,7 +27,33 @@ namespace ObsidianToMarkdown.Context
         /// 文件分类，实际上对应Obsidian中文件夹层级
         /// </summary>
         public List<string> Categories { get; set; }
+        /// <summary>
+        /// 文件链接，实际用于绕开解析中文目录错误限制，实现相对路径访问
+        /// </summary>
+        public string Link { get; set; }
+
+        public override string ToString() {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("---\n");
+            sb.Append($"title: {Title}\n");
+            sb.Append($"date: {DateTime.ToString("yyyy-MM-dd HH:mm:ss")}\n");
+            sb.Append("tags:\n");
+            foreach (string tag in Tags)
+            {
+                sb.Append($"\t- {tag}\n");
+            }
+            sb.Append("categories:\n");
+            foreach (string category in Categories)
+            {
+                sb.Append($"\t- {category}\n");
+            }
+            sb.Append($"permalink: {Link}\n");
+            sb.Append("---\n");
+            return sb.ToString();
+        }
+
         // 示例结构
+        //---
         //title: 向量空间
         //date: 2019-10-10 10:00:00
         //tags: 
@@ -37,5 +63,7 @@ namespace ObsidianToMarkdown.Context
         //categories:
         //    - 从线性映射理解线性代数
         //    - test1
+        //permalink: _posts/path_relative_link/_filename.html(_posts/从线性映射理解线性代数/test1/Chap3 线性映射.html)
+        //---
     }
 }
