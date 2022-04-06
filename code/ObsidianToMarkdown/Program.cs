@@ -68,11 +68,15 @@ namespace ObsidianToMarkdown
                     }
                     else
                     {
-                        if (!File.Exists(targetFilePath))
+                        // 跳过.json file，影响hexo配置...
+                        if(fileInfo.Extension != ".json")
                         {
-                            File.Copy(fileInfo.FullName, targetFilePath);
+                            if (!File.Exists(targetFilePath))
+                            {
+                                File.Copy(fileInfo.FullName, targetFilePath);
+                                Log.Information($"copy file: {fileInfo.FullName} to {targetFilePath}");
+                            }
                         }
-                        Log.Information($"copy file: {fileInfo.FullName} to {targetFilePath}");
                     }
                 }
             }

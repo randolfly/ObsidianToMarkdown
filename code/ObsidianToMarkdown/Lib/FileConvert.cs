@@ -161,7 +161,7 @@ namespace ObsidianToMarkdown.Lib
         /// <returns>替换完成的文本</returns>
         public static string ReplaceWikiLink(this string fileText)
         {
-            string pattern = @"\[\[\s*(?<content>[\S ]+?)\s*\]\]";
+            string pattern = @"\[\[\s*(?<content>[^\|]+?)(?<name>\|\S+?)*?\s*\]\]";
             var matches = Regex.Matches(fileText, pattern, RegexOptions.IgnoreCase);
             MatchEvaluator evaluator = new MatchEvaluator(ChangeWikiLink);
             string newFileText = Regex.Replace(fileText, pattern, evaluator);
@@ -169,7 +169,18 @@ namespace ObsidianToMarkdown.Lib
 
             static string ChangeWikiLink(Match match)
             {
+                // https://regexr.com/
                 string? content = match?.Groups["content"].Value.Trim();
+                string? name = match?.Groups["name"].Value.Trim();
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = content.Split("/").Last();
+                }
+                else
+                {
+                    name = name.Substring(1);
+                }
+
                 StringBuilder stringBuilder = new StringBuilder();
                 switch (content?.Substring(0, 1))
                 {
@@ -179,11 +190,11 @@ namespace ObsidianToMarkdown.Lib
                         stringBuilder.Append($"(literature-{content.Replace("@", "")})");
                         break;
                     case ".":
-                        stringBuilder.Append($"[{content.Split("/").Last()}]");
+                        stringBuilder.Append($"[{name}]");
                         stringBuilder.Append($"({content})");
                         break;
                     default:
-                        stringBuilder.Append($"[{content?.Split("/").Last()}]");
+                        stringBuilder.Append($"[{name}]");
                         stringBuilder.Append($"(./{content})");
                         break;
                 }
@@ -191,6 +202,5 @@ namespace ObsidianToMarkdown.Lib
                 return stringBuilder.ToString();
             }
         }
-
     }
 }
