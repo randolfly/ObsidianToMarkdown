@@ -92,7 +92,7 @@ namespace ObsidianToMarkdown
                     else
                     {
                         // 跳过.json .html file，影响hexo配置...
-                        if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".png" || fileInfo.Extension == ".pdf" || fileInfo.Extension == ".svg")
+                        if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".png" || fileInfo.Extension == ".svg")
                         {
                             if (!File.Exists(targetFilePath))
                             {
