@@ -1,2 +1,4 @@
-vaultPath: 'E:\randolf.top\library'
+vaultPath: 'E:\randolf.top'
+ignorePaths: ['.git','.obsidian','life','phd']
+addPaths: ['phd\courses']
 destinationPath: 'E:\randolf.blog\source\_posts'

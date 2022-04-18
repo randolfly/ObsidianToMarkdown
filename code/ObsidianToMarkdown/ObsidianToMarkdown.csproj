@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <None Update="obsidianDb.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="test2.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

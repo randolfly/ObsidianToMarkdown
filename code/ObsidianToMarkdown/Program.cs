@@ -24,6 +24,29 @@ namespace ObsidianToMarkdown
 
             List<DirectoryInfo>? vaultDictories = vaultPath.GetDirectories("*.*", System.IO.SearchOption.AllDirectories).ToList();
             vaultDictories.Add(vaultPath);
+
+            vaultDictories.RemoveAll((DirectoryInfo vaultDir) =>
+            {
+                string dirRelativePath = Path.GetRelativePath(vaultPath.FullName, vaultDir.FullName);
+                // delelte ignore Paths
+                foreach (var ignorePath in fileConfig.IgnorePaths)
+                {
+                    if (dirRelativePath.StartsWith(ignorePath))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            foreach (var addPath in fileConfig.AddPaths)
+            {
+                var addFullPath = Path.Combine(fileConfig.VaultPath, addPath);
+                DirectoryInfo addDirectory = Directory.CreateDirectory(addFullPath);
+
+                List<DirectoryInfo>? addVaultDictories = addDirectory.GetDirectories("*.*", System.IO.SearchOption.AllDirectories).ToList();
+                vaultDictories.AddRange(addVaultDictories);
+            }
             // create dir
             foreach (DirectoryInfo vaultDictoriesDir in vaultDictories)
             {
@@ -68,8 +91,8 @@ namespace ObsidianToMarkdown
                     }
                     else
                     {
-                        // 跳过.json file，影响hexo配置...
-                        if(fileInfo.Extension != ".json")
+                        // 跳过.json .html file，影响hexo配置...
+                        if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".png" || fileInfo.Extension == ".pdf" || fileInfo.Extension == ".svg")
                         {
                             if (!File.Exists(targetFilePath))
                             {
